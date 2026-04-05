@@ -121,6 +121,22 @@ CREATE TABLE IF NOT EXISTS grampanchayat_info (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tax Payment table (For storing QR code and bank details)
+CREATE TABLE IF NOT EXISTS tax_payment (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    qr_file_path TEXT,
+    qr_file_url TEXT,
+    qr_file_type VARCHAR(50),
+    tax_info TEXT,
+    bank_name VARCHAR(255),
+    account_name VARCHAR(255),
+    account_no VARCHAR(50),
+    ifsc_code VARCHAR(20),
+    upi_id VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_representatives_position ON representatives(position);
@@ -151,6 +167,7 @@ CREATE TRIGGER update_historical_events_updated_at BEFORE UPDATE ON historical_e
 CREATE TRIGGER update_historical_places_updated_at BEFORE UPDATE ON historical_places FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_historical_awards_updated_at BEFORE UPDATE ON historical_awards FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_grampanchayat_info_updated_at BEFORE UPDATE ON grampanchayat_info FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_tax_payment_updated_at BEFORE UPDATE ON tax_payment FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Enable Row Level Security (RLS) - Optional but recommended
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
@@ -163,6 +180,7 @@ ALTER TABLE historical_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE historical_places ENABLE ROW LEVEL SECURITY;
 ALTER TABLE historical_awards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE grampanchayat_info ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tax_payment ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for public read access (for website)
 CREATE POLICY "Public read access" ON representatives FOR SELECT USING (true);
@@ -173,6 +191,7 @@ CREATE POLICY "Public read access" ON historical_events FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON historical_places FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON historical_awards FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON grampanchayat_info FOR SELECT USING (true);
+CREATE POLICY "Public read access" ON tax_payment FOR SELECT USING (true);
 
 -- Service role has full access (bypass RLS)
 -- This is handled by using the service_role key in backend
