@@ -19,6 +19,7 @@ const TaxPayment = {
       accountName: row.account_name,
       accountNo: row.account_no,
       ifscCode: row.ifsc_code,
+      upiId: row.upi_id,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };
@@ -41,9 +42,9 @@ const TaxPayment = {
         const updateQuery = `
           UPDATE tax_payment
           SET tax_info = $1, bank_name = $2, account_name = $3,
-              account_no = $4, ifsc_code = $5,
+              account_no = $4, ifsc_code = $5, upi_id = $6,
               updated_at = CURRENT_TIMESTAMP
-          WHERE id = $6
+          WHERE id = $7
           RETURNING *
         `;
         result = await client.query(updateQuery, [
@@ -52,6 +53,7 @@ const TaxPayment = {
           data.accountName || null,
           data.accountNo || null,
           data.ifscCode || null,
+          data.upiId || null,
           checkResult.rows[0].id,
         ]);
       } else {
@@ -59,9 +61,9 @@ const TaxPayment = {
         const insertQuery = `
           INSERT INTO tax_payment (
             tax_info, bank_name, account_name,
-            account_no, ifsc_code
+            account_no, ifsc_code, upi_id
           )
-          VALUES ($1, $2, $3, $4, $5)
+          VALUES ($1, $2, $3, $4, $5, $6)
           RETURNING *
         `;
         result = await client.query(insertQuery, [
@@ -70,6 +72,7 @@ const TaxPayment = {
           data.accountName || null,
           data.accountNo || null,
           data.ifscCode || null,
+          data.upiId || null,
         ]);
       }
 
@@ -83,6 +86,7 @@ const TaxPayment = {
         accountName: row.account_name,
         accountNo: row.account_no,
         ifscCode: row.ifsc_code,
+        upiId: row.upi_id,
       };
     } catch (error) {
       await client.query("ROLLBACK");
